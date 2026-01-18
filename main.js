@@ -8,6 +8,7 @@
 // ============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+  initMobileNav();
   initHeroScene();
   initProblemScene();
   initVisionScene();
@@ -16,6 +17,30 @@ document.addEventListener('DOMContentLoaded', () => {
   initDashboardAnimations();
   initParallax();
 });
+
+// ============================================
+// MOBILE NAVIGATION
+// ============================================
+
+function initMobileNav() {
+  const toggle = document.querySelector('.nav-toggle');
+  const navLinks = document.querySelector('.nav-links');
+
+  if (toggle && navLinks) {
+    toggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      toggle.classList.toggle('active');
+    });
+
+    // Close menu when clicking a link
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navLinks.classList.remove('active');
+        toggle.classList.remove('active');
+      });
+    });
+  }
+}
 
 // ============================================
 // HERO SECTION - Three.js City Grid
@@ -28,7 +53,7 @@ function initHeroScene() {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  
+
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setClearColor(0x0a0a0f, 1);
@@ -38,19 +63,19 @@ function initHeroScene() {
   const spacing = 3;
   const nodes = [];
   const nodeGeometry = new THREE.SphereGeometry(0.15, 16, 16);
-  
+
   // Create venue nodes
   for (let x = -gridSize / 2; x < gridSize / 2; x++) {
     for (let z = -gridSize / 2; z < gridSize / 2; z++) {
       if (Math.random() > 0.7) {
         const intensity = Math.random();
         const color = new THREE.Color().setHSL(0.75 + Math.random() * 0.15, 0.8, 0.5 + intensity * 0.3);
-        const nodeMaterial = new THREE.MeshBasicMaterial({ 
+        const nodeMaterial = new THREE.MeshBasicMaterial({
           color: color,
           transparent: true,
           opacity: 0.8
         });
-        
+
         const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
         node.position.set(
           x * spacing + (Math.random() - 0.5) * spacing * 0.5,
@@ -63,7 +88,7 @@ function initHeroScene() {
           pulseOffset: Math.random() * Math.PI * 2,
           intensity: intensity
         };
-        
+
         scene.add(node);
         nodes.push(node);
       }
@@ -71,12 +96,12 @@ function initHeroScene() {
   }
 
   // Create connection lines between nearby nodes
-  const lineMaterial = new THREE.LineBasicMaterial({ 
-    color: 0xa855f7, 
-    transparent: true, 
-    opacity: 0.15 
+  const lineMaterial = new THREE.LineBasicMaterial({
+    color: 0xa855f7,
+    transparent: true,
+    opacity: 0.15
   });
-  
+
   const connections = [];
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
@@ -203,7 +228,7 @@ function initProblemScene() {
 
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
-  
+
   function resize() {
     const rect = canvas.parentElement.getBoundingClientRect();
     canvas.width = rect.width * dpr;
@@ -217,7 +242,7 @@ function initProblemScene() {
 
   let time = 0;
   const stars = [];
-  
+
   // Create fake stars
   for (let i = 0; i < 100; i++) {
     stars.push({
@@ -243,7 +268,7 @@ function initProblemScene() {
     // Draw glitchy stars (representing fake/unreliable data)
     stars.forEach(star => {
       const glitch = Math.random() > 0.95;
-      
+
       if (glitch) {
         star.opacity = Math.random();
         star.x += (Math.random() - 0.5) * 0.1;
@@ -251,13 +276,13 @@ function initProblemScene() {
 
       ctx.beginPath();
       ctx.arc(
-        star.x * w, 
-        star.y * h, 
+        star.x * w,
+        star.y * h,
         star.size * (1 + Math.sin(time * star.speed) * 0.3),
-        0, 
+        0,
         Math.PI * 2
       );
-      
+
       const hue = 35 + Math.sin(time + star.x * 10) * 20; // Amber range
       ctx.fillStyle = `hsla(${hue}, 80%, 60%, ${star.opacity * 0.5})`;
       ctx.fill();
@@ -330,7 +355,7 @@ function initVisionScene() {
     // Draw connection lines between cities
     ctx.strokeStyle = 'rgba(168, 85, 247, 0.1)';
     ctx.lineWidth = 1;
-    
+
     for (let i = 0; i < cities.length; i++) {
       for (let j = i + 1; j < cities.length; j++) {
         if ((cities[i].active || cities[j].active) && Math.random() > 0.8) {
@@ -346,7 +371,7 @@ function initVisionScene() {
     cities.forEach((city, index) => {
       const x = city.x * w;
       const y = city.y * h;
-      
+
       // Activate cities over time based on scroll
       const scrollProgress = window.scrollY / (document.body.scrollHeight - window.innerHeight);
       city.active = scrollProgress > 0.6 + index * 0.03;
@@ -486,7 +511,7 @@ function initGameplayVisual() {
     // Draw avatar
     const ax = avatarX * w;
     const ay = avatarY * h;
-    
+
     // Avatar glow
     const avatarGradient = ctx.createRadialGradient(ax, ay, 0, ax, ay, 30);
     avatarGradient.addColorStop(0, 'rgba(6, 182, 212, 0.6)');
@@ -674,7 +699,7 @@ function initParallax() {
 
 function initStepVisuals() {
   const stepIds = ['step-1-visual', 'step-2-visual', 'step-3-visual', 'step-4-visual'];
-  
+
   stepIds.forEach((id, index) => {
     const container = document.getElementById(id);
     if (!container) return;
@@ -710,7 +735,7 @@ function initStepVisuals() {
 
     function animate() {
       requestAnimationFrame(animate);
-      
+
       const w = canvas.width / dpr;
       const h = canvas.height / dpr;
 
